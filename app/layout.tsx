@@ -1,0 +1,50 @@
+import type { Metadata } from "next";
+import { Geist, Geist_Mono } from "next/font/google";
+import "./globals.css";
+import Script from "next/script";
+
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
+
+export const metadata: Metadata = {
+  title: "mallukey",
+  description: "Malayalam Typing Reimagined."
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html
+      lang="en"
+      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+    >
+      <body className="min-h-full flex flex-col">
+        {children}
+        <Script id="bmc-widget" strategy="lazyOnload" dangerouslySetInnerHTML={{ __html: `
+          var script = document.createElement("script");
+          script.src = "https://cdnjs.buymeacoffee.com/1.0.0/widget.prod.min.js";
+          script.setAttribute("data-name", "BMC-Widget");
+          script.setAttribute("data-cfasync", "false");
+          script.setAttribute("data-id", "hizoxilsij");
+          script.setAttribute("data-description", "Support me on Buy me a coffee!");
+          script.setAttribute("data-message", "");
+          script.setAttribute("data-color", "#B3F023");
+          script.setAttribute("data-position", "Right");
+          script.setAttribute("data-x_margin", "18");
+          script.setAttribute("data-y_margin", "18");
+          document.body.appendChild(script);
+        ` }} />
+      </body>
+    </html>
+  );
+}
