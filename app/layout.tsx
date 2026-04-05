@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "mallukey",
+  title: "malluKey",
   description: "Malayalam Typing Reimagined."
 };
 

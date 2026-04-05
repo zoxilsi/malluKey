@@ -20,14 +20,14 @@ export default function Home() {
               <IconKeyboard className="w-5 h-5" stroke={2} />
             </div>
             <span className="text-2xl font-black tracking-tighter text-neutral-900 border-b-4 border-[#B3F023] leading-none pb-0.5">
-              mallu<span className="text-neutral-500 font-extrabold">key</span>
+              mallu<span className="text-neutral-500 font-extrabold">Key</span>
             </span>
           </div>
 
           <div>
             <h1 className="text-xl font-black text-slate-900">Desktop Recommended</h1>
             <p className="mt-2 text-sm font-semibold leading-relaxed text-slate-700">
-              mallukey is optimized for bigger screens. Please open this website on a desktop or laptop for the best typing experience.
+              malluKey is optimized for bigger screens. Please open this website on a desktop or laptop for the best typing experience.
             </p>
           </div>
 
@@ -57,7 +57,7 @@ export default function Home() {
               <IconKeyboard className="w-5 h-5" stroke={2} />
             </div>
             <span className="text-2xl font-black tracking-tighter text-neutral-900 border-b-4 border-[#B3F023] leading-none pb-0.5">
-              mallu<span className="text-neutral-500 font-extrabold">key</span>
+              mallu<span className="text-neutral-500 font-extrabold">Key</span>
             </span>
           </div>
           
@@ -65,7 +65,7 @@ export default function Home() {
             <a href="https://instagram.com/zoxilsi" target="_blank" rel="noreferrer" className="bg-[#B3F023] p-2 rounded-full border-2 border-slate-900 shadow-[2px_2px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all text-slate-900">
               <IconBrandInstagram className="w-5 h-5" stroke={2}/>
             </a>
-            <a href="https://github.com/zoxilsi/mallu-keyboard" target="_blank" rel="noreferrer" className="hidden sm:flex items-center gap-2 bg-white text-slate-900 px-3 py-1.5 rounded-full hover:scale-[1.02] active:scale-[0.98] transition-transform shadow-[2px_2px_0px_rgba(0,0,0,1)] border-2 border-slate-900 font-bold text-sm">
+            <a href="https://github.com/zoxilsi/malluKey" target="_blank" rel="noreferrer" className="hidden sm:flex items-center gap-2 bg-white text-slate-900 px-3 py-1.5 rounded-full hover:scale-[1.02] active:scale-[0.98] transition-transform shadow-[2px_2px_0px_rgba(0,0,0,1)] border-2 border-slate-900 font-bold text-sm">
               <IconBrandGithub className="w-5 h-5" stroke={2} />
               Star
             </a>
