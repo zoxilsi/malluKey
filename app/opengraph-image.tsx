@@ -17,7 +17,6 @@ export default function Image() {
           justifyContent: 'center',
           backgroundColor: '#0a0a0a', // Deep dark black/gray
           color: '#ffffff',
-          fontFamily: 'sans-serif',
           fontFamily: '"Geist", "Inter", sans-serif',
         }}
       >
