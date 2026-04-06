@@ -29,9 +29,11 @@ export default function TypingArea() {
   const [userInput, setUserInput] = useState("");
   
   const [stats, setStats] = useState({ wpm: 0, accuracy: 100, correctWords: 0, wrongWords: 0 });
+  const [inputWarning, setInputWarning] = useState("");
   const [mounted, setMounted] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const isInputLockedRef = useRef(false);
+  const inputWarningTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     isInputLockedRef.current = isFinished || !isUsernameSet;
@@ -41,6 +43,12 @@ export default function TypingArea() {
     const data = await getLeaderboard();
     setLeaderboard(data);
   };
+
+  const showInputWarning = useCallback((message: string) => {
+    setInputWarning(message);
+    if (inputWarningTimeoutRef.current) clearTimeout(inputWarningTimeoutRef.current);
+    inputWarningTimeoutRef.current = setTimeout(() => setInputWarning(""), 1600);
+  }, []);
 
   const resetTest = useCallback(() => {
     if (timerRef.current) clearInterval(timerRef.current);
@@ -54,6 +62,7 @@ export default function TypingArea() {
     setIsActive(false);
     setIsFinished(false);
     setLeaderboardMessage("");
+    setInputWarning("");
     setStats({ wpm: 0, accuracy: 100, correctWords: 0, wrongWords: 0 });
     fetchLeaderboard();
   }, [duration]);
@@ -152,6 +161,13 @@ export default function TypingArea() {
   const handleKeyPress = useCallback((e: KeyboardEvent) => {
       if (isInputLockedRef.current) return;
 
+      const key = e.key.toLowerCase();
+      if ((e.ctrlKey || e.metaKey) && (key === 'v' || key === 'x' || key === 'insert')) {
+        e.preventDefault();
+        showInputWarning('Paste is blocked during the typing test');
+        return;
+      }
+
       const mapping = malayalamKeyMap[e.code];
       const mappedChar = mapping ? (e.shiftKey ? mapping.shift : mapping.normal) : undefined;
       
@@ -171,8 +187,31 @@ export default function TypingArea() {
         processInputUpdate(userInput + c);
       }
     },
-    [isActive, malayalamKeyMap, userInput, processInputUpdate]
+    [isActive, userInput, processInputUpdate, showInputWarning]
   );
+
+  useEffect(() => {
+    const blockClipboardInput = (e: ClipboardEvent) => {
+      if (isInputLockedRef.current) return;
+      e.preventDefault();
+      showInputWarning('Paste is blocked during the typing test');
+    };
+
+    const blockDropInput = (e: DragEvent) => {
+      if (isInputLockedRef.current) return;
+      e.preventDefault();
+      showInputWarning('Drop is blocked during the typing test');
+    };
+
+    window.addEventListener('paste', blockClipboardInput);
+    window.addEventListener('drop', blockDropInput);
+
+    return () => {
+      window.removeEventListener('paste', blockClipboardInput);
+      window.removeEventListener('drop', blockDropInput);
+      if (inputWarningTimeoutRef.current) clearTimeout(inputWarningTimeoutRef.current);
+    };
+  }, [showInputWarning]);
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeyPress);
@@ -237,6 +276,12 @@ export default function TypingArea() {
               ))}
             </div>
           </div>
+
+          {inputWarning && (
+            <div className="mb-2 rounded-lg border-2 border-slate-900 bg-[#ffe9a8] px-3 py-2 text-center text-xs font-black text-slate-900 shadow-[2px_2px_0px_rgba(0,0,0,1)] sm:text-sm">
+              {inputWarning}
+            </div>
+          )}
 
           <div className="text-left leading-relaxed tracking-wide font-sans md:leading-loose text-slate-500 font-medium mb-0 select-none flex flex-col">
             <div className="relative mb-0 min-h-[4rem] break-words text-xl perspective-[1000px] sm:min-h-[5rem] sm:text-2xl md:text-3xl">
