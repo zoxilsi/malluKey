@@ -2,10 +2,11 @@
 
 import { Keyboard } from "@/components/ui/keyboard";
 import { useCallback, useEffect, useState, useRef } from "react";
+import { createPortal } from "react-dom";
 import { getRandomSentences } from "@/lib/words/malayalam";
 import { malayalamKeyMap } from "@/lib/layouts/malayalam";
 import { motion, AnimatePresence } from "framer-motion";
-import { IconKeyboard, IconRefresh, IconTarget, IconUser, IconTrophy, IconAlertTriangle } from "@tabler/icons-react";
+import { IconKeyboard, IconRefresh, IconTarget, IconUser, IconTrophy, IconAlertTriangle, IconX } from "@tabler/icons-react";
 import { submitScore, getLeaderboard, LeaderboardEntry } from "@/app/actions/leaderboard";
 
 const DURATIONS = [15, 30, 60];
@@ -282,22 +283,29 @@ export default function TypingArea() {
         </div>
 
       {/* Split Results / Leaderboard Modal */}
-      {isFinished && isUsernameSet && (
-        <div className="fixed inset-0 z-[120] grid place-items-center p-2 sm:p-4">
-          <div className="absolute inset-0 bg-slate-900/55 backdrop-blur-[1px]" onClick={resetTest} />
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.18 }}
-            className="relative z-10 flex w-[min(96vw,1100px)] max-h-[90dvh] flex-col gap-6 overflow-y-auto rounded-[2rem] border-4 border-slate-900 bg-white p-4 shadow-[8px_8px_0px_rgba(0,0,0,1)] sm:p-6 md:flex-row md:gap-8 md:p-8"
-          >
+      {isFinished && isUsernameSet && createPortal(
+        <div className="fixed inset-0 z-[10000] overflow-y-auto bg-slate-900/60 p-3 sm:p-5 md:p-8">
+          <div className="mx-auto flex min-h-full w-full items-start justify-center md:items-center">
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.18 }}
+              className="relative my-4 flex w-full max-w-6xl flex-col gap-6 overflow-hidden rounded-[2rem] border-4 border-slate-900 bg-white p-4 shadow-[8px_8px_0px_rgba(0,0,0,1)] sm:my-6 sm:p-6 md:max-h-[calc(100dvh-5rem)] md:flex-row md:gap-8 md:p-8"
+            >
+              <button
+                onClick={resetTest}
+                aria-label="Close results"
+                className="absolute right-3 top-3 z-20 flex h-9 w-9 items-center justify-center rounded-full border-2 border-slate-900 bg-[#baeef3] text-slate-900 shadow-[2px_2px_0px_rgba(0,0,0,1)] transition-colors hover:bg-[#B3F023] sm:right-4 sm:top-4"
+              >
+                <IconX className="h-5 w-5" stroke={2.4} />
+              </button>
 
           {/* Left Side: Stats */}
-          <div className="flex flex-1 flex-col justify-center">
+          <div className="flex flex-1 flex-col justify-center overflow-y-auto pr-0 md:pr-2">
             <div className="mb-4 inline-block w-fit rounded-full border-2 border-slate-900 bg-[#baeef3] px-3 py-1 text-sm font-black text-slate-900">
               {username}'s Result
             </div>
-            <h2 className="text-3xl font-black text-slate-900 mb-6 flex items-center justify-start gap-3">
+            <h2 className="mb-6 flex items-center justify-start gap-3 text-2xl font-black text-slate-900 sm:text-3xl">
               <IconTarget className="w-8 h-8 text-slate-900" stroke={2.5} />
               Analytics
             </h2>
@@ -305,11 +313,11 @@ export default function TypingArea() {
             <div className="grid grid-cols-2 gap-4 mb-5 w-full">
               <div className="bg-[#B3F023] border-2 border-slate-900 rounded-xl p-4 shadow-[4px_4px_0px_rgba(0,0,0,1)] flex flex-col items-center justify-center">
                 <div className="text-sm font-black text-slate-900 uppercase tracking-widest mb-1 flex items-center gap-1.5"><IconKeyboard className="w-4 h-4" /> WPM</div>
-                <div className="text-6xl font-black text-slate-900">{stats.wpm}</div>
+                <div className="text-5xl font-black text-slate-900 sm:text-6xl">{stats.wpm}</div>
               </div>
               <div className="bg-white border-2 border-slate-900 rounded-xl p-4 shadow-[4px_4px_0px_rgba(0,0,0,1)] flex flex-col items-center justify-center">
                 <div className="text-sm font-black text-slate-900 uppercase tracking-widest mb-1 flex items-center gap-1.5"><IconTarget className="w-4 h-4" /> Accuracy</div>
-                <div className="text-5xl font-black text-slate-900">{stats.accuracy}<span className="text-3xl">%</span></div>
+                <div className="text-4xl font-black text-slate-900 sm:text-5xl">{stats.accuracy}<span className="text-3xl">%</span></div>
               </div>
             </div>
 
@@ -356,7 +364,7 @@ export default function TypingArea() {
 
           {/* Right Side: Leaderboard */}
           <div className="flex min-h-0 flex-1 flex-col pt-4 md:pt-0">
-            <h2 className="text-3xl font-black text-slate-900 mb-6 flex items-center justify-start gap-3">
+            <h2 className="mb-6 flex items-center justify-start gap-3 text-2xl font-black text-slate-900 sm:text-3xl">
               <div className="bg-[#B3F023] p-1.5 rounded-full border-2 border-slate-900">
                 <IconTrophy className="w-6 h-6 text-slate-900" stroke={2.5} />
               </div>
@@ -414,9 +422,10 @@ export default function TypingArea() {
             </div>
           </div>
 
-          </motion.div>
+            </motion.div>
+          </div>
         </div>
-      )}
+      , document.body)}
     </div>
   );
 }
