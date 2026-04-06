@@ -14,8 +14,46 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "malluKey",
-  description: "Malayalam Typing Reimagined."
+  title: "MalluKey | Malayalam Typing Speed Test & Keyboard",
+  description: "Test and improve your Malayalam typing speed. ⚡ Fast, secure, and accurate Malayalam Keyboard (WPM tracking). Compete on the Top 10 global leaderboard today!",
+  keywords: [
+    "malayalam typing",
+    "mallu keyboard",
+    "malayalam speed test",
+    "typing competition",
+    "online malayalam keyboard",
+    "malayalam typing practice",
+    "WPM test malayalam",
+    "learn malayalam typing"
+  ],
+  authors: [{ name: "MalluKey" }],
+  creator: "MalluKey",
+  publisher: "MalluKey",
+  openGraph: {
+    title: "MalluKey | Malayalam Typing Speed Test",
+    description: "The ultimate Malayalam typing competition & practice tool. Track your WPM, learn the exact custom keyboard layout, and rule the global Top 10 leaderboard.",
+    url: "https://mallukey.vercel.app", // Replace with your actual domain when you get one!
+    siteName: "MalluKey",
+    type: "website",
+    locale: "ml_IN",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "MalluKey | Malayalam Typing Speed Test",
+    description: "Test your Malayalam typing speed and compete against the world! Can you hit the Top 10?",
+    creator: "@mallukey",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    }
+  },
 };
 
 export default function RootLayout({
