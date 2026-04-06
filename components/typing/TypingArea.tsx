@@ -5,11 +5,17 @@ import { useCallback, useEffect, useState, useRef } from "react";
 import { getRandomSentences } from "@/lib/words/malayalam";
 import { malayalamKeyMap } from "@/lib/layouts/malayalam";
 import { motion, AnimatePresence } from "framer-motion";
-import { IconKeyboard, IconRefresh, IconTarget } from "@tabler/icons-react";
+import { IconKeyboard, IconRefresh, IconTarget, IconUser, IconTrophy, IconAlertTriangle } from "@tabler/icons-react";
+import { submitScore, getLeaderboard, LeaderboardEntry } from "@/app/actions/leaderboard";
 
 const DURATIONS = [15, 30, 60];
 
 export default function TypingArea() {
+  const [username, setUsername] = useState("");
+  const [isUsernameSet, setIsUsernameSet] = useState(false);
+  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
+  const [leaderboardMessage, setLeaderboardMessage] = useState("");
+
   const [duration, setDuration] = useState(30);
   const [timeLeft, setTimeLeft] = useState(30);
   const [isActive, setIsActive] = useState(false);
@@ -25,6 +31,11 @@ export default function TypingArea() {
   const [mounted, setMounted] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
+  const fetchLeaderboard = async () => {
+    const data = await getLeaderboard();
+    setLeaderboard(data);
+  };
+
   const resetTest = useCallback(() => {
     if (timerRef.current) clearInterval(timerRef.current);
     const generated = getRandomSentences();
@@ -36,26 +47,40 @@ export default function TypingArea() {
     setTimeLeft(duration);
     setIsActive(false);
     setIsFinished(false);
+    setLeaderboardMessage("");
     setStats({ wpm: 0, accuracy: 100, correctWords: 0, wrongWords: 0 });
+    fetchLeaderboard();
   }, [duration]);
 
-  useEffect(() => { setMounted(true); resetTest(); }, [duration, resetTest]);
+  useEffect(() => { 
+    setMounted(true); 
+    resetTest();
+    // Try to load username from localStorage
+    const savedName = localStorage.getItem("malluKey_username");
+    if (savedName) {
+      setUsername(savedName);
+      setIsUsernameSet(true);
+    }
+  }, [duration, resetTest]);
+
+  const handleSetUsername = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (username.trim()) {
+      localStorage.setItem("malluKey_username", username.trim());
+      setIsUsernameSet(true);
+    }
+  };
 
   const calculateStats = useCallback(() => {
-    // If the timer hasn't changed or test just ended instantly
     const actualTimeElapsed = duration - timeLeft;
     const timeElapsedInMinutes = actualTimeElapsed / 60;
     
     if (actualTimeElapsed <= 0) return { wpm: 0, accuracy: 0, correctWords: 0, wrongWords: 0 };
     
-    // Total accumulated input vs Target
     const totalTyped = (pastInput + userInput).trim();
-    
-    // We only count characters that actually match targetText at that index
     const correctKeystrokes = totalTyped.split('').filter((c, i) => c === targetText[i]).length;
     const accuracy = totalTyped.length > 0 ? Math.round((correctKeystrokes / totalTyped.length) * 100) : 100;
     
-    // Standard typing test formula: 5 characters = 1 word
     const grossWpm = (totalTyped.length / 5) / timeElapsedInMinutes;
     const netWpm = Math.max(0, Math.round(grossWpm - ((totalTyped.length - correctKeystrokes) / 5) / timeElapsedInMinutes));
     
@@ -79,15 +104,21 @@ export default function TypingArea() {
     if (isActive && timeLeft === 0) {
       setIsActive(false);
       setIsFinished(true);
-      setStats(calculateStats());
+      const finalStats = calculateStats();
+      setStats(finalStats);
+
+      // Submit to leaderboard
+      submitScore(username, finalStats.wpm).then((res) => {
+        setLeaderboardMessage(res.message);
+        fetchLeaderboard();
+      });
     }
-  }, [timeLeft, isActive, calculateStats]);
+  }, [timeLeft, isActive, calculateStats, username]);
 
   const processInputUpdate = useCallback((newInput: string) => {
     const currentSentence = sentences[currentSentenceIdx] || "";
     
     if (newInput.length >= currentSentence.length) {
-      // Complete current sentence! Move to next adding EXACT typed input
       setPastInput((prev) => prev + newInput + " ");
       setUserInput("");
       setCurrentSentenceIdx((prev) => prev + 1);
@@ -97,7 +128,7 @@ export default function TypingArea() {
   }, [sentences, currentSentenceIdx]);
 
   const handleVirtualKey = useCallback((code: string) => {
-    if (isFinished) return;
+    if (isFinished || !isUsernameSet) return;
     const mappedChar = malayalamKeyMap[code]?.normal;
     if (!isActive) setIsActive(true);
     
@@ -106,15 +137,13 @@ export default function TypingArea() {
       return;
     }
     
-    const charToAdd = mappedChar;
-    if (charToAdd) {
-      processInputUpdate(userInput + charToAdd);
+    if (mappedChar) {
+      processInputUpdate(userInput + mappedChar);
     }
-  }, [isActive, isFinished, malayalamKeyMap, userInput, processInputUpdate]);
+  }, [isActive, isFinished, isUsernameSet, malayalamKeyMap, userInput, processInputUpdate]);
 
-  const handleKeyPress = useCallback(
-    (e: KeyboardEvent) => {
-      if (isFinished) return;
+  const handleKeyPress = useCallback((e: KeyboardEvent) => {
+      if (isFinished || !isUsernameSet) return;
 
       const mapping = malayalamKeyMap[e.code];
       const mappedChar = mapping ? (e.shiftKey ? mapping.shift : mapping.normal) : undefined;
@@ -127,19 +156,15 @@ export default function TypingArea() {
         return;
       }
 
-      if (mappedChar || e.key.length === 1) { // Allowing real standard keys if mappedChar lacks space?
-        // Let's use mappedChar if exists, otherwise space if user hits space
-        let c = mappedChar;
-        if (e.code === 'Space') c = ' ';
-        // Fallback for native typing
-        if (!c && e.key.length === 1 && e.key !== ' ') c = e.key;
+      let c = mappedChar;
+      if (e.code === 'Space') c = ' ';
+      if (!c && e.key.length === 1 && e.key !== ' ') c = e.key;
 
-        if (c) {
-          processInputUpdate(userInput + c);
-        }
+      if (c) {
+        processInputUpdate(userInput + c);
       }
     },
-    [isActive, isFinished, malayalamKeyMap, userInput, processInputUpdate]
+    [isActive, isFinished, isUsernameSet, malayalamKeyMap, userInput, processInputUpdate]
   );
 
   useEffect(() => {
@@ -154,7 +179,39 @@ export default function TypingArea() {
 
   return (
     <div className="relative z-10 mx-auto flex w-full max-w-5xl flex-col items-center justify-center px-1 py-0 sm:px-2">
-      <div className={"relative flex w-full flex-col items-center transition-all duration-500 " + (isFinished ? "pointer-events-none blur-md opacity-40" : "")}>
+      
+      {/* Username Popup */}
+      {!isUsernameSet && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-md rounded-2xl border-4 border-slate-900 bg-[#baeef3] p-8 shadow-[8px_8px_0px_rgba(0,0,0,1)]">
+            <div className="mb-6 flex justify-center">
+              <div className="flex h-16 w-16 items-center justify-center rounded-full border-4 border-slate-900 bg-[#B3F023] shadow-[4px_4px_0px_rgba(0,0,0,1)]">
+                <IconUser className="h-8 w-8 text-slate-900" stroke={2.5} />
+              </div>
+            </div>
+            <h2 className="mb-2 text-center text-2xl font-black text-slate-900">Enter Your Name</h2>
+            <p className="mb-6 text-center font-bold text-slate-700">to join the malluKey leaderboard!</p>
+            <form onSubmit={handleSetUsername} className="flex flex-col gap-4">
+              <input
+                autoFocus
+                type="text"
+                maxLength={15}
+                placeholder="Typing master..."
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                className="w-full rounded-xl border-4 border-slate-900 px-4 py-3 text-lg font-black text-slate-900 placeholder-slate-400 outline-none focus:shadow-[4px_4px_0px_rgba(0,0,0,1)] transition-all"
+                required
+              />
+              <button type="submit" className="w-full rounded-xl border-4 border-slate-900 bg-[#B3F023] px-4 py-3 text-xl font-black text-slate-900 shadow-[4px_4px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none active:bg-[#a0d620]">
+                Start Typing!
+              </button>
+            </form>
+          </motion.div>
+        </div>
+      )}
+
+      {/* Main UI Area */}
+      <div className={"relative flex w-full flex-col items-center transition-all duration-500 " + (isFinished || !isUsernameSet ? "pointer-events-none blur-md opacity-40" : "")}>
         <div className="w-full relative">
           <div className="mb-2 flex items-center justify-between gap-3 opacity-80 transition-opacity hover:opacity-100">
             <div className="text-xl font-mono font-black tracking-tighter text-slate-900 sm:text-2xl">
@@ -174,10 +231,7 @@ export default function TypingArea() {
             </div>
           </div>
 
-          {/* Screen area proper */}
           <div className="text-left leading-relaxed tracking-wide font-sans md:leading-loose text-slate-500 font-medium mb-0 select-none flex flex-col">
-            
-            {/* Current Sentence */}
             <div className="relative mb-0 min-h-[4rem] break-words text-xl perspective-[1000px] sm:min-h-[5rem] sm:text-2xl md:text-3xl">
               <AnimatePresence mode="popLayout">
                 <motion.div
@@ -208,16 +262,12 @@ export default function TypingArea() {
                 </motion.div>
               </AnimatePresence>
             </div>
-
-            {/* Next Sentence Shadow Preview */}
             <div className="relative z-0 hidden mb-4 mt-0.5 select-none break-words text-xl font-bold text-slate-400 opacity-40 blur-[0.5px] transition-all duration-700 pointer-events-none md:block lg:text-2xl">
               {nextSentence}
             </div>
-
           </div>
         </div>
 
-        {/* Keyboard Component */}
         <div className="mt-4 hidden w-full overflow-x-auto pb-2 sm:block">
           <div className="w-max mx-auto flex justify-center">
             <Keyboard
@@ -231,38 +281,115 @@ export default function TypingArea() {
           </div>
         </div>
 
-        {/* Results Modal */}
-      {isFinished && (
-        <motion.div initial={{ opacity: 0, y: 30, scale: 0.9 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ type: "spring", stiffness: 300, damping: 25 }} className="absolute top-1/2 left-1/2 z-50 flex w-[95vw] max-w-lg -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center overflow-hidden rounded-2xl border-4 border-slate-900 bg-white p-6 shadow-[8px_8px_0px_rgba(0,0,0,1)] sm:p-8">
-          <div className="absolute top-0 left-0 w-full h-3 bg-[#B3F023] border-b-4 border-slate-900"></div>
-          <h2 className="text-3xl font-black text-slate-900 mb-6 flex items-center justify-center gap-3">
-            <IconTarget className="w-8 h-8 text-slate-900" stroke={2.5} />
-            Analytics
-          </h2>
-          <div className="grid grid-cols-2 gap-4 mb-5 w-full">
-            <div className="bg-[#B3F023] border-2 border-slate-900 rounded-xl p-4 shadow-[4px_4px_0px_rgba(0,0,0,1)] flex flex-col items-center justify-center">
-              <div className="text-sm font-black text-slate-900 uppercase tracking-widest mb-1 flex items-center gap-1.5"><IconKeyboard className="w-4 h-4" /> WPM</div>
-              <div className="text-6xl font-black text-slate-900">{stats.wpm}</div>
+      {/* Split Results / Leaderboard Modal */}
+      {isFinished && isUsernameSet && (
+        <motion.div initial={{ opacity: 0, y: 30, scale: 0.9 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ type: "spring", stiffness: 300, damping: 25 }} className="absolute top-1/2 left-1/2 z-50 flex w-[95vw] max-w-5xl -translate-x-1/2 -translate-y-1/2 flex-col md:flex-row items-stretch justify-center overflow-hidden rounded-[2rem] border-4 border-slate-900 bg-white p-6 shadow-[8px_8px_0px_rgba(0,0,0,1)] sm:p-8 gap-8">
+          
+          {/* Left Side: Stats */}
+          <div className="flex-1 flex flex-col justify-center">
+            <div className="mb-4 inline-block w-fit rounded-full border-2 border-slate-900 bg-[#baeef3] px-3 py-1 text-sm font-black text-slate-900">
+              {username}'s Result
             </div>
-            <div className="bg-white border-2 border-slate-900 rounded-xl p-4 shadow-[4px_4px_0px_rgba(0,0,0,1)] flex flex-col items-center justify-center">
-              <div className="text-sm font-black text-slate-900 uppercase tracking-widest mb-1 flex items-center gap-1.5"><IconTarget className="w-4 h-4" /> Accuracy</div>
-              <div className="text-5xl font-black text-slate-900">{stats.accuracy}<span className="text-3xl">%</span></div>
+            <h2 className="text-3xl font-black text-slate-900 mb-6 flex items-center justify-start gap-3">
+              <IconTarget className="w-8 h-8 text-slate-900" stroke={2.5} />
+              Analytics
+            </h2>
+            
+            <div className="grid grid-cols-2 gap-4 mb-5 w-full">
+              <div className="bg-[#B3F023] border-2 border-slate-900 rounded-xl p-4 shadow-[4px_4px_0px_rgba(0,0,0,1)] flex flex-col items-center justify-center">
+                <div className="text-sm font-black text-slate-900 uppercase tracking-widest mb-1 flex items-center gap-1.5"><IconKeyboard className="w-4 h-4" /> WPM</div>
+                <div className="text-6xl font-black text-slate-900">{stats.wpm}</div>
+              </div>
+              <div className="bg-white border-2 border-slate-900 rounded-xl p-4 shadow-[4px_4px_0px_rgba(0,0,0,1)] flex flex-col items-center justify-center">
+                <div className="text-sm font-black text-slate-900 uppercase tracking-widest mb-1 flex items-center gap-1.5"><IconTarget className="w-4 h-4" /> Accuracy</div>
+                <div className="text-5xl font-black text-slate-900">{stats.accuracy}<span className="text-3xl">%</span></div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4 mb-6 w-full">
+              <div className="bg-white border-2 border-slate-900 rounded-xl p-3 flex flex-col items-center justify-center shadow-[4px_4px_0px_rgba(0,0,0,1)]">
+                <span className="text-xs font-black text-slate-900 uppercase">Correct Words</span>
+                <span className="text-3xl font-black text-slate-900">{stats.correctWords}</span>
+              </div>
+              <div className="bg-white border-2 border-slate-900 rounded-xl p-3 flex flex-col items-center justify-center shadow-[4px_4px_0px_rgba(0,0,0,1)]">
+                <span className="text-xs font-black text-slate-900 uppercase">Wrong Words</span>
+                <span className="text-3xl font-black text-slate-900">{stats.wrongWords}</span>
+              </div>
+            </div>
+
+            {/* Dynamic Status Message Based on Server Return */}
+            {leaderboardMessage && (
+              <div className={`mb-6 p-4 rounded-xl border-2 border-slate-900 font-bold shadow-[4px_4px_0px_rgba(0,0,0,1)] flex items-center justify-center gap-2 ${leaderboardMessage.includes('Failed') ? 'bg-red-300 text-red-900' : 'bg-[#B3F023] text-green-900'}`}>
+                {leaderboardMessage.includes('Failed') ? <IconAlertTriangle /> : <IconTrophy />}
+                {leaderboardMessage}
+              </div>
+            )}
+
+            <button onClick={resetTest} className="w-full bg-[#B3F023] hover:bg-[#a0d620] text-slate-900 font-black text-xl py-4 px-8 border-4 border-slate-900 rounded-xl shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px] transition-all flex items-center justify-center gap-2">
+              <IconRefresh className="w-6 h-6" stroke={2.5}/>
+              Try Again
+            </button>
+          </div>
+
+          {/* Vertical Divider */}
+          <div className="hidden md:block w-1 rounded-full bg-slate-900/10"></div>
+
+          {/* Right Side: Leaderboard */}
+          <div className="flex-1 flex flex-col pt-4 md:pt-0">
+            <h2 className="text-3xl font-black text-slate-900 mb-6 flex items-center justify-start gap-3">
+              <div className="bg-[#B3F023] p-1.5 rounded-full border-2 border-slate-900">
+                <IconTrophy className="w-6 h-6 text-slate-900" stroke={2.5} />
+              </div>
+              Top 10 Typers
+            </h2>
+
+            <div className="flex flex-col gap-3 overflow-y-auto max-h-[400px] pr-2 scrollbar-thin scrollbar-thumb-slate-900 scrollbar-track-transparent">
+              {leaderboard.length === 0 ? (
+                <div className="text-center text-slate-500 font-bold p-8">Loading scores...</div>
+              ) : (
+                leaderboard.map((entry, idx) => {
+                  // Custom styling for Top 3
+                  let rowClasses = "bg-white text-slate-900";
+                  let rankClasses = "bg-slate-100 text-slate-500 border-transparent";
+                  let crown = null;
+
+                  if (idx === 0) {
+                    rowClasses = "bg-[#FFE066] relative z-10 shadow-[4px_4px_0px_rgba(0,0,0,1)]";
+                    rankClasses = "bg-yellow-400 text-yellow-900 border-slate-900";
+                    crown = "👑";
+                  } else if (idx === 1) {
+                    rowClasses = "bg-zinc-200 shadow-[3px_3px_0px_rgba(0,0,0,1)]";
+                    rankClasses = "bg-zinc-300 text-zinc-800 border-slate-900";
+                    crown = "🥈";
+                  } else if (idx === 2) {
+                    rowClasses = "bg-orange-200 shadow-[3px_3px_0px_rgba(0,0,0,1)]";
+                    rankClasses = "bg-orange-300 text-orange-900 border-slate-900";
+                    crown = "🥉";
+                  } else {
+                    rowClasses = "border-slate-900 border-2 shadow-[2px_2px_0px_rgba(0,0,0,1)] opacity-90";
+                  }
+
+                  return (
+                    <div key={entry.id} className={`flex items-center justify-between p-3 border-2 border-slate-900 rounded-xl transition-all ${rowClasses}`}>
+                      <div className="flex items-center gap-3">
+                        <span className={`w-8 h-8 flex items-center justify-center rounded-full font-black text-sm border-2 ${rankClasses}`}>
+                          #{idx + 1}
+                        </span>
+                        <span className="font-black text-lg flex items-center gap-2 truncate max-w-[150px]">
+                          {entry.name}
+                          {crown && <span className="text-xl" title="Crown">{crown}</span>}
+                        </span>
+                      </div>
+                      <div className="bg-[#baeef3] px-3 py-1 rounded-lg border-2 border-slate-900 font-black text-slate-900 flex items-center gap-1 shadow-sm">
+                        {entry.wpm} <span className="text-[10px] uppercase font-bold text-slate-700">WPM</span>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-4 mb-8 w-full">
-            <div className="bg-white border-2 border-slate-900 rounded-xl p-3 flex flex-col items-center justify-center shadow-[4px_4px_0px_rgba(0,0,0,1)]">
-              <span className="text-xs font-black text-slate-900 uppercase">Correct Words</span>
-              <span className="text-3xl font-black text-slate-900">{stats.correctWords}</span>
-            </div>
-            <div className="bg-white border-2 border-slate-900 rounded-xl p-3 flex flex-col items-center justify-center shadow-[4px_4px_0px_rgba(0,0,0,1)]">
-              <span className="text-xs font-black text-slate-900 uppercase">Wrong Words</span>
-              <span className="text-3xl font-black text-slate-900">{stats.wrongWords}</span>
-            </div>
-          </div>
-          <button onClick={resetTest} className="w-full bg-[#B3F023] hover:bg-[#a0d620] text-slate-900 font-black text-xl py-4 px-8 border-4 border-slate-900 rounded-xl shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px] transition-all flex items-center justify-center gap-2">
-            <IconRefresh className="w-6 h-6" stroke={2.5}/>
-            Try Again
-          </button>
+
         </motion.div>
       )}
     </div>

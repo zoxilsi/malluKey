@@ -1,6 +1,7 @@
 import TypingArea from "@/components/typing/TypingArea";
 import { IconKeyboard, IconBrandInstagram, IconBrandGithub, IconBrandTwitter, IconBrandLinkedin, IconCloud } from '@tabler/icons-react';
 import SupportButton from "@/components/ui/SupportButton";
+import GlobalLeaderboard from "@/components/ui/GlobalLeaderboard";
 
 export default function Home() {
   return (
@@ -62,6 +63,7 @@ export default function Home() {
           </div>
           
           <div className="flex items-center gap-3">
+            <GlobalLeaderboard />
             <a href="https://instagram.com/zoxilsi" target="_blank" rel="noreferrer" className="bg-[#B3F023] p-2 rounded-full border-2 border-slate-900 shadow-[2px_2px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all text-slate-900">
               <IconBrandInstagram className="w-5 h-5" stroke={2}/>
             </a>
