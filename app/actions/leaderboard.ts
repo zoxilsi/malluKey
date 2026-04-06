@@ -43,7 +43,7 @@ export async function submitScore(name: string, wpm: number) {
     if (wpm <= tenthPlaceWpm) {
       return { 
         success: false, 
-        message: "Failed! You are not the top 10 mallu speed typer. Try again!" 
+        message: "Great effort. Keep practicing and you can break into the Top 10 soon!" 
       };
     }
   }

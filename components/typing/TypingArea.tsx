@@ -334,8 +334,8 @@ export default function TypingArea() {
 
             {/* Dynamic Status Message Based on Server Return */}
             {leaderboardMessage && (
-              <div className={`mb-6 p-4 rounded-xl border-2 border-slate-900 font-bold shadow-[4px_4px_0px_rgba(0,0,0,1)] flex items-center justify-center gap-2 ${leaderboardMessage.includes('Failed') ? 'bg-red-300 text-red-900' : 'bg-[#B3F023] text-green-900'}`}>
-                {leaderboardMessage.includes('Failed') ? <IconAlertTriangle /> : <IconTrophy />}
+              <div className={`mb-6 flex items-center justify-center gap-2 rounded-xl border-2 border-slate-900 p-4 font-bold shadow-[4px_4px_0px_rgba(0,0,0,1)] ${leaderboardMessage.includes('Top 10') ? 'bg-[#B3F023] text-green-900' : 'bg-[#ffe9a8] text-amber-900'}`}>
+                {leaderboardMessage.includes('Top 10') ? <IconTrophy /> : <IconAlertTriangle />}
                 {leaderboardMessage}
               </div>
             )}
