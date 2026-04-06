@@ -1,49 +1,93 @@
 <div align="center">
-  <img src="app/opengraph-image.png" width="400" alt="MalluKey Banner" style="border-radius: 15px; box-shadow: 0px 4px 30px rgba(179, 240, 35, 0.4); margin-bottom: 20px;"/>
-  <h1 style="color: #B3F023; font-size: 3em; margin: 0;">MalluKey</h1>
-  <p style="font-size: 1.2em; color: #a3a3a3;"><strong> Malayalam Speed Typing Application ⚡</strong></p>
+  <img src="app/opengraph-image.png" width="600" alt="MalluKey Banner" style="border-radius: 12px; margin-bottom: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);"/>
   
-  <div>
-    <img src="https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white" alt="Next.js" />
-    <img src="https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white" alt="Supabase" />
-    <img src="https://img.shields.io/badge/Live-Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white" alt="Vercel" />
-    <img src="https://img.shields.io/badge/100%25_Secure-B3F023?style=for-the-badge&logo=security&logoColor=000000" alt="Secure" />
+  <h1 style="color: #B3F023; font-size: 3.5em; font-weight: 800; margin: 0; letter-spacing: -1px;">MalluKey</h1>
+  <p style="font-size: 1.1em; color: #888888; font-weight: 400; letter-spacing: 2px;">
+    A MODERN MALAYALAM SPEED TYPING EXPERIENCE
+  </p>
+  
+  <div style="margin-top: 15px; margin-bottom: 15px;">
+    <a href="https://github.com/zoxilsi/malluKey/stargazers">
+      <img src="https://img.shields.io/github/stars/zoxilsi/malluKey?style=for-the-badge&color=B3F023&logo=github&logoColor=black" alt="Stars" />
+    </a>
+    <a href="https://github.com/zoxilsi/malluKey/blob/main/LICENSE">
+      <img src="https://img.shields.io/badge/License-MIT-black?style=for-the-badge" alt="License" />
+    </a>
   </div>
+
+  <p style="color: #a3a3a3; font-size: 0.95em;">
+    <em>If you find this project interesting or useful, please consider giving it a star!</em>
+  </p>
 </div>
 
 <br />
 
-## 🌟 About The Project
+## <img src="https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/info.svg" width="22" height="22" align="center" /> About The Project
 
-**MalluKey** is a modern, ultra-fast web application built to help users practice and master their Malayalam typing speed. It provides a truly interactive 1:1 Malayalam keyboard layout map and pits typists against each other on a live global leaderboard.
+MalluKey is a minimalist, ultra-responsive web application designed to help users practice and master their Malayalam typing speed. Built with a strict focus on luxury design and high performance, it provides an accurate interactive keyboard layout and a competitive global leaderboard.
 
-### ✨ What makes it special?
-- ⌨️ **Accurate Mapping**: Custom virtual Malayalam keyboard layout mirroring exact real-world key presses.
-- ⚡ **Live WPM Engine**: Real-time Words Per Minute (WPM) and accuracy calculation engine.
-- 🏆 **Global Top 10 Leaderboard**: A highly competitive, auto-updating rank list hosted on Supabase.
-- 🎨 **Beautiful UI/UX**: Crafted entirely around a neon lime green (`#B3F023`) and deep dark mode aesthetic with haptic typing feedback.
-- 🔒 **Enterprise-Grade Security**: A robust and modern Next.js Server Actions backend. Zero sensitive data (like API tokens) are handled client-side.
+### <img src="https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/layers.svg" width="20" height="20" align="center" /> Core Features
 
----
-
-## 🔒 Security Architecture
-As part of our strict security posturing:
-- **Zero Frontend API Keys:** Absolutely no sensitive database keys (like Supabase URLs or Anon/Service keys) are exposed to the browser, the client Javascript bundle, or the frontend console environment.
-- **Server Actions Only:** The application routes 100% of database interactions natively through Next.js `use server` Server Actions. 
-- **Secret Exclusion:** No `.env` or sensitive configurations are ever committed to the GitHub index or Git history. 
+- **Interactive Keyboard Map**: A 1:1 custom virtual Malayalam keyboard layout mirroring real-world key presses.
+- **Real-Time Analytics**: An instant Words Per Minute (WPM) and accuracy calculation engine.
+- **Global Leaderboard**: A highly competitive, auto-updating Top 10 rank list hosted securely.
+- **Luxury UI/UX**: Crafted around a premium dark mode aesthetic with signature neon lime green accents (`#B3F023`) and tactile haptic feedback.
 
 ---
 
-## 🚀 Deployment to Vercel
+## <img src="https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/shield-check.svg" width="22" height="22" align="center" /> Security Architecture
 
-If you want to host this robust web app, follow these deployment steps. **We do not store database configs in this codebase**, so you must provide them securely via your Vercel Dashboard:
+Security is treated as a first-class citizen in MalluKey's architecture.
+
+- **Zero Frontend API Keys:** No sensitive database configurations (like Supabase URLs or Anon/Service keys) are exposed to the browser or client bundle.
+- **Server Actions Standard:** 100% of database interactions are routed natively through Next.js `use server` Server Actions.
+- **Secret Exclusion:** Configuration variables are injected strictly at the deployment layer and are never committed to the version control history.
+
+---
+
+## <img src="https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/server.svg" width="22" height="22" align="center" /> Deployment
+
+Self-hosting MalluKey via Vercel is streamlined. Database configurations are managed securely via the Vercel Dashboard.
 
 1. Import this repository into [Vercel](https://vercel.com/).
-2. During the setup process, navigate to **Environment Variables**.
-3. Add your production keys:
-   - `SUPABASE_URL` = `your-api-url.supabase.co`
-   - `SUPABASE_SERVICE_ROLE_KEY` = `your-secret-key`
-4. Click **Deploy**. Vercel will safely compile the backend services with your injected secrets without ever exposing them to your visitors.
+2. Navigate to **Environment Variables** during setup.
+3. Inject your production keys:
+   - `SUPABASE_URL` 
+   - `SUPABASE_SERVICE_ROLE_KEY`
+4. Click **Deploy**. Vercel compiles the backend services explicitly keeping your injected secrets out of the client build.
 
-## 📄 License
-Distributed under the MIT License. Built with ❤️ for the Malayalam coding community.
+---
+
+## <img src="https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/users.svg" width="22" height="22" align="center" /> Contributing
+
+MalluKey is an open-source initiative. We highly welcome and encourage contributions from the community! Whether you want to add new features, fix bugs, optimize performance, or improve documentation, your help is deeply appreciated.
+
+1. **Fork** the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a **Pull Request**
+
+---
+
+## <img src="https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/heart.svg" width="22" height="22" align="center" /> Support & Sponsor
+
+Creating and maintaining open-source software takes significant time and effort. If you love this project, please consider supporting its development:
+
+<a href="https://www.buymeacoffee.com/hizoxilsij" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 50px !important;width: 200px !important;" ></a>
+
+---
+
+## <img src="https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/link.svg" width="22" height="22" align="center" /> Connect With Me
+
+Built and designed by **zoxilsi**. Let's connect:
+
+<a href="https://twitter.com/zoxilsi"><img src="https://img.shields.io/badge/Twitter-000000?style=for-the-badge&logo=x&logoColor=white" alt="Twitter" /></a>
+<a href="https://linkedin.com/in/zoxilsi"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn" /></a>
+<a href="https://instagram.com/zoxilsi"><img src="https://img.shields.io/badge/Instagram-E4405F?style=for-the-badge&logo=instagram&logoColor=white" alt="Instagram" /></a>
+
+---
+
+## <img src="https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/scale.svg" width="22" height="22" align="center" /> License
+
+Distributed under the **MIT License**. Check out the `LICENSE` file in this repository for more information.
