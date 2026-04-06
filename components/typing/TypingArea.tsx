@@ -31,6 +31,11 @@ export default function TypingArea() {
   const [stats, setStats] = useState({ wpm: 0, accuracy: 100, correctWords: 0, wrongWords: 0 });
   const [mounted, setMounted] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const isInputLockedRef = useRef(false);
+
+  useEffect(() => {
+    isInputLockedRef.current = isFinished || !isUsernameSet;
+  }, [isFinished, isUsernameSet]);
 
   const fetchLeaderboard = async () => {
     const data = await getLeaderboard();
@@ -117,6 +122,7 @@ export default function TypingArea() {
   }, [timeLeft, isActive, calculateStats, username]);
 
   const processInputUpdate = useCallback((newInput: string) => {
+    if (isInputLockedRef.current) return;
     const currentSentence = sentences[currentSentenceIdx] || "";
     
     if (newInput.length >= currentSentence.length) {
@@ -129,7 +135,7 @@ export default function TypingArea() {
   }, [sentences, currentSentenceIdx]);
 
   const handleVirtualKey = useCallback((code: string) => {
-    if (isFinished || !isUsernameSet) return;
+    if (isInputLockedRef.current) return;
     const mappedChar = malayalamKeyMap[code]?.normal;
     if (!isActive) setIsActive(true);
     
@@ -141,10 +147,10 @@ export default function TypingArea() {
     if (mappedChar) {
       processInputUpdate(userInput + mappedChar);
     }
-  }, [isActive, isFinished, isUsernameSet, malayalamKeyMap, userInput, processInputUpdate]);
+    }, [isActive, malayalamKeyMap, userInput, processInputUpdate]);
 
   const handleKeyPress = useCallback((e: KeyboardEvent) => {
-      if (isFinished || !isUsernameSet) return;
+      if (isInputLockedRef.current) return;
 
       const mapping = malayalamKeyMap[e.code];
       const mappedChar = mapping ? (e.shiftKey ? mapping.shift : mapping.normal) : undefined;
@@ -165,7 +171,7 @@ export default function TypingArea() {
         processInputUpdate(userInput + c);
       }
     },
-    [isActive, isFinished, isUsernameSet, malayalamKeyMap, userInput, processInputUpdate]
+    [isActive, malayalamKeyMap, userInput, processInputUpdate]
   );
 
   useEffect(() => {
@@ -276,7 +282,7 @@ export default function TypingArea() {
                 onKeyEvent={(e) => { if (e.phase === 'down' && e.source === 'pointer') handleVirtualKey(e.code); }}
                 theme="classic"
                 enableHaptics
-                enableSound
+                enableSound={!isFinished && isUsernameSet}
               />
             </div>
           </div>
@@ -334,7 +340,7 @@ export default function TypingArea() {
 
             {/* Dynamic Status Message Based on Server Return */}
             {leaderboardMessage && (
-              <div className={`mb-6 flex items-center justify-center gap-2 rounded-xl border-2 border-slate-900 p-4 font-bold shadow-[4px_4px_0px_rgba(0,0,0,1)] ${leaderboardMessage.includes('Top 10') ? 'bg-[#B3F023] text-green-900' : 'bg-[#ffe9a8] text-amber-900'}`}>
+              <div className={`mb-6 flex items-center justify-center gap-2 rounded-xl border-2 border-slate-900 p-4 font-bold shadow-[4px_4px_0px_rgba(0,0,0,1)] ${leaderboardMessage.includes('Top 10') ? 'bg-[#B3F023] text-green-900' : 'bg-[#ffe9a8] text-slate-900 ring-2 ring-amber-500/70'}`}>
                 {leaderboardMessage.includes('Top 10') ? <IconTrophy /> : <IconAlertTriangle />}
                 {leaderboardMessage}
               </div>
