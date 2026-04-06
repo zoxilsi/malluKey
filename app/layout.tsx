@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import Script from "next/script";
-import { Analytics } from "@vercel/analytics/next";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -69,6 +69,7 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col">
         {children}
+        <Analytics />
         <Script id="bmc-widget" strategy="lazyOnload" dangerouslySetInnerHTML={{ __html: `
           var script = document.createElement("script");
           script.src = "https://cdnjs.buymeacoffee.com/1.0.0/widget.prod.min.js";
@@ -87,4 +88,3 @@ export default function RootLayout({
     </html>
   );
 }
-          <Analytics />
