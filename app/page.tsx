@@ -1,6 +1,7 @@
 import TypingArea from "@/components/typing/TypingArea";
 import { IconKeyboard, IconBrandInstagram, IconBrandGithub, IconBrandTwitter, IconBrandLinkedin, IconCloud } from '@tabler/icons-react';
 import SupportButton from "@/components/ui/SupportButton";
+import { TutorialButton } from "@/components/ui/TutorialButton";
 import GlobalLeaderboard from "@/components/ui/GlobalLeaderboard";
 
 export default function Home() {
@@ -50,7 +51,7 @@ export default function Home() {
       </div>
 
       {/* Content wrapper */}
-      <div className="relative z-10 mx-auto flex min-h-[100dvh] w-full max-w-5xl flex-col justify-between px-4 py-4 md:py-6 lg:py-8">
+      <div className="relative z-10 mx-auto flex min-h-[100dvh] w-full max-w-5xl flex-col gap-4 px-4 py-4 md:gap-5 md:py-6 lg:gap-6 lg:py-8">
         {/* Clean Header */}
         <header className="relative z-20 mx-auto flex w-full flex-col items-center justify-between gap-3 rounded-[2rem] border-2 border-neutral-900 bg-white/95 px-4 py-3 shadow-[4px_4px_0px_rgba(0,0,0,1)] backdrop-blur-sm md:flex-row md:gap-0 md:px-6">
           <div className="flex items-center gap-3 text-slate-900">
@@ -62,8 +63,9 @@ export default function Home() {
             </span>
           </div>
           
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center justify-center gap-2 md:justify-end">
             <GlobalLeaderboard />
+            <TutorialButton />
             <a href="https://instagram.com/zoxilsi" target="_blank" rel="noreferrer" className="bg-[#B3F023] p-2 rounded-full border-2 border-slate-900 shadow-[2px_2px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all text-slate-900">
               <IconBrandInstagram className="w-5 h-5" stroke={2}/>
             </a>
@@ -75,14 +77,14 @@ export default function Home() {
         </header>
 
         {/* Hero Section / Typing Test */}
-        <div className="relative z-10 mx-auto flex w-full flex-1 flex-col justify-center py-6 md:py-8">
+        <div className="relative z-10 mx-auto flex w-full flex-1 min-h-0 flex-col py-3 md:py-4">
           <div className="w-full rounded-[2rem] border-2 border-slate-900/10 bg-white/60 p-3 shadow-sm backdrop-blur-md sm:p-6 lg:p-8">
             <TypingArea />
           </div>
         </div>
 
         {/* Clean Footer */}
-        <footer className="relative z-10 mx-auto flex w-full flex-col items-center justify-center gap-3 pt-2 text-slate-900">
+        <footer className="relative z-10 mx-auto mt-auto flex w-full flex-col items-center justify-center gap-3 pt-1 text-slate-900">
           <div className="flex w-fit flex-col items-center gap-4 rounded-3xl border-2 border-slate-900/10 bg-white/60 px-4 py-4 backdrop-blur-sm shadow-sm sm:flex-row sm:gap-6 sm:px-8">
             <div className="flex items-center text-lg font-bold text-slate-900">
               Created by <a href="https://instagram.com/zoxilsi" target="_blank" rel="noreferrer" className="ml-2 inline-block bg-[#B3F023] px-3 py-1 border-2 border-slate-900 shadow-[3px_3px_0px_rgba(0,0,0,1)] rotate-[-2deg] rounded-md font-black hover:translate-x-[3px] hover:translate-y-[3px] hover:shadow-none hover:rotate-0 transition-all text-slate-900">zoxilsi</a>
@@ -108,6 +110,7 @@ export default function Home() {
       </div>
 
       <SupportButton />
+        
       </div>
     </main>
   );

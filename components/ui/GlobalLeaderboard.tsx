@@ -36,17 +36,17 @@ export default function GlobalLeaderboard() {
           className="fixed inset-0 z-[9999] grid place-items-center bg-slate-900/60 p-4 backdrop-blur-sm sm:p-6"
         >
           <motion.div
-            initial={{ opacity: 0, y: 24, scale: 0.96 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 24, scale: 0.96 }}
-            transition={{ type: "spring", stiffness: 320, damping: 28 }}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 10 }}
+            transition={{ duration: 0.18 }}
             onClick={(e) => e.stopPropagation()}
             className="relative flex w-full max-w-xl flex-col overflow-hidden rounded-3xl border-4 border-slate-900 bg-white shadow-[8px_8px_0px_rgba(0,0,0,1)] max-h-[88dvh]"
           >
             <div className="relative shrink-0 border-b-2 border-slate-900/10 bg-white px-6 pb-4 pt-6 sm:px-8 sm:pt-8">
               <button
                 onClick={() => setIsOpen(false)}
-                className="absolute right-4 top-4 rounded-full border-2 border-slate-900 bg-[#baeef3] p-1.5 text-slate-900 shadow-[2px_2px_0px_rgba(0,0,0,1)] transition-transform hover:scale-110 hover:bg-[#B3F023] hover:shadow-none"
+                className="absolute right-4 top-4 rounded-full border-2 border-slate-900 bg-[#baeef3] p-1.5 text-slate-900 shadow-[2px_2px_0px_rgba(0,0,0,1)] transition-colors hover:bg-[#B3F023]"
               >
                 <IconX className="h-5 w-5" stroke={3} />
               </button>
@@ -73,34 +73,38 @@ export default function GlobalLeaderboard() {
                 {!isLoading && leaderboard.map((entry, idx) => {
                   let rowClasses = "bg-white text-slate-900 border-slate-900 border-2 shadow-[2px_2px_0px_rgba(0,0,0,1)]";
                   let rankClasses = "bg-slate-100 text-slate-500 border-transparent";
-                  let crown = "";
+                  let rankBadge = "";
 
                   if (idx === 0) {
                     rowClasses = "bg-[#FFE066] text-slate-900 border-slate-900 border-2 shadow-[4px_4px_0px_rgba(0,0,0,1)]";
                     rankClasses = "bg-yellow-400 text-yellow-900 border-slate-900";
-                    crown = "👑";
+                    rankBadge = "Top";
                   } else if (idx === 1) {
                     rowClasses = "bg-zinc-200 text-slate-900 border-slate-900 border-2 shadow-[3px_3px_0px_rgba(0,0,0,1)]";
                     rankClasses = "bg-zinc-300 text-zinc-800 border-slate-900";
-                    crown = "🥈";
+                    rankBadge = "2nd";
                   } else if (idx === 2) {
                     rowClasses = "bg-orange-200 text-slate-900 border-slate-900 border-2 shadow-[3px_3px_0px_rgba(0,0,0,1)]";
                     rankClasses = "bg-orange-300 text-orange-900 border-slate-900";
-                    crown = "🥉";
+                    rankBadge = "3rd";
                   }
 
                   return (
                     <div
                       key={entry.id}
-                      className={`flex items-center justify-between rounded-xl p-3 transition-all hover:translate-x-1 ${rowClasses}`}
+                      className={`flex items-center justify-between rounded-xl p-3 ${rowClasses}`}
                     >
                       <div className="flex min-w-0 items-center gap-3">
                         <span className={`flex h-8 w-8 items-center justify-center rounded-full border-2 text-sm font-black ${rankClasses}`}>
                           #{idx + 1}
                         </span>
-                        <span className="flex max-w-[150px] items-center gap-2 truncate text-lg font-black sm:max-w-xs">
+                        <span className="flex max-w-[180px] items-center gap-2 truncate text-lg font-black sm:max-w-xs">
                           {entry.name}
-                          {crown && <span className="inline-block text-xl drop-shadow-sm">{crown}</span>}
+                          {rankBadge && (
+                            <span className="rounded border border-slate-900/20 bg-white/70 px-1.5 py-0.5 text-[10px] font-black uppercase tracking-wide text-slate-700">
+                              {rankBadge}
+                            </span>
+                          )}
                         </span>
                       </div>
                       <div className="flex items-center gap-1 rounded-lg border-2 border-slate-900 bg-[#baeef3] px-3 py-1 font-black text-slate-900 shadow-sm">
@@ -122,9 +126,9 @@ export default function GlobalLeaderboard() {
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="flex items-center gap-2 rounded-full border-2 border-slate-900 bg-[#baeef3] px-3 py-1.5 text-sm font-bold text-slate-900 shadow-[2px_2px_0px_rgba(0,0,0,1)] transition-transform hover:scale-[1.02] active:scale-[0.98]"
+        className="flex h-10 items-center gap-2 rounded-lg border-2 border-slate-900 bg-white px-3 text-sm font-bold text-slate-900 shadow-[2px_2px_0px_rgba(0,0,0,1)] transition-colors hover:bg-[#baeef3]"
       >
-        <IconTrophy className="h-5 w-5" stroke={2} />
+        <IconTrophy className="h-4 w-4" stroke={2.2} />
         <span className="hidden sm:inline">Leaderboard</span>
       </button>
 

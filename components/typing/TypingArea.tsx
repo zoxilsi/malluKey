@@ -283,10 +283,17 @@ export default function TypingArea() {
 
       {/* Split Results / Leaderboard Modal */}
       {isFinished && isUsernameSet && (
-        <motion.div initial={{ opacity: 0, y: 30, scale: 0.9 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ type: "spring", stiffness: 300, damping: 25 }} className="absolute top-1/2 left-1/2 z-50 flex w-[95vw] max-w-5xl -translate-x-1/2 -translate-y-1/2 flex-col md:flex-row items-stretch justify-center overflow-hidden rounded-[2rem] border-4 border-slate-900 bg-white p-6 shadow-[8px_8px_0px_rgba(0,0,0,1)] sm:p-8 gap-8">
-          
+        <div className="fixed inset-0 z-[120] grid place-items-center p-2 sm:p-4">
+          <div className="absolute inset-0 bg-slate-900/55 backdrop-blur-[1px]" onClick={resetTest} />
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.18 }}
+            className="relative z-10 flex w-[min(96vw,1100px)] max-h-[90dvh] flex-col gap-6 overflow-y-auto rounded-[2rem] border-4 border-slate-900 bg-white p-4 shadow-[8px_8px_0px_rgba(0,0,0,1)] sm:p-6 md:flex-row md:gap-8 md:p-8"
+          >
+
           {/* Left Side: Stats */}
-          <div className="flex-1 flex flex-col justify-center">
+          <div className="flex flex-1 flex-col justify-center">
             <div className="mb-4 inline-block w-fit rounded-full border-2 border-slate-900 bg-[#baeef3] px-3 py-1 text-sm font-black text-slate-900">
               {username}'s Result
             </div>
@@ -329,13 +336,26 @@ export default function TypingArea() {
               <IconRefresh className="w-6 h-6" stroke={2.5}/>
               Try Again
             </button>
+
+            <div className="mt-4 rounded-xl border-2 border-slate-900 bg-slate-50 p-4 text-center shadow-[4px_4px_0px_rgba(0,0,0,1)]">
+              <p className="mb-2 text-sm font-bold text-slate-800">
+                Want to learn Malayalam typing? Need help with key combinations?
+              </p>
+              <button
+                onClick={() => window.dispatchEvent(new CustomEvent('open-typing-tutorial'))}
+                className="inline-flex items-center gap-2 rounded-lg border-2 border-slate-900 bg-white px-3 py-1.5 text-sm font-black text-slate-900 shadow-[2px_2px_0px_rgba(0,0,0,1)] transition-all hover:bg-[#B3F023] hover:-translate-y-[1px] hover:shadow-[4px_4px_0px_rgba(0,0,0,1)] active:translate-y-0 active:shadow-[0px_0px_0px_rgba(0,0,0,1)]"
+              >
+                <IconKeyboard className="h-4 w-4 stroke-[2.5px]" />
+                Show Tutorial
+              </button>
+            </div>
           </div>
 
           {/* Vertical Divider */}
-          <div className="hidden md:block w-1 rounded-full bg-slate-900/10"></div>
+          <div className="hidden w-1 rounded-full bg-slate-900/10 md:block"></div>
 
           {/* Right Side: Leaderboard */}
-          <div className="flex-1 flex flex-col pt-4 md:pt-0">
+          <div className="flex min-h-0 flex-1 flex-col pt-4 md:pt-0">
             <h2 className="text-3xl font-black text-slate-900 mb-6 flex items-center justify-start gap-3">
               <div className="bg-[#B3F023] p-1.5 rounded-full border-2 border-slate-900">
                 <IconTrophy className="w-6 h-6 text-slate-900" stroke={2.5} />
@@ -343,7 +363,7 @@ export default function TypingArea() {
               Top 10 Typers
             </h2>
 
-            <div className="flex flex-col gap-3 overflow-y-auto max-h-[400px] pr-2 scrollbar-thin scrollbar-thumb-slate-900 scrollbar-track-transparent">
+            <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-slate-900 scrollbar-track-transparent">
               {leaderboard.length === 0 ? (
                 <div className="text-center text-slate-500 font-bold p-8">Loading scores...</div>
               ) : (
@@ -351,20 +371,20 @@ export default function TypingArea() {
                   // Custom styling for Top 3
                   let rowClasses = "bg-white text-slate-900";
                   let rankClasses = "bg-slate-100 text-slate-500 border-transparent";
-                  let crown = null;
+                  let rankBadge = "";
 
                   if (idx === 0) {
                     rowClasses = "bg-[#FFE066] relative z-10 shadow-[4px_4px_0px_rgba(0,0,0,1)]";
                     rankClasses = "bg-yellow-400 text-yellow-900 border-slate-900";
-                    crown = "👑";
+                    rankBadge = "Top";
                   } else if (idx === 1) {
                     rowClasses = "bg-zinc-200 shadow-[3px_3px_0px_rgba(0,0,0,1)]";
                     rankClasses = "bg-zinc-300 text-zinc-800 border-slate-900";
-                    crown = "🥈";
+                    rankBadge = "2nd";
                   } else if (idx === 2) {
                     rowClasses = "bg-orange-200 shadow-[3px_3px_0px_rgba(0,0,0,1)]";
                     rankClasses = "bg-orange-300 text-orange-900 border-slate-900";
-                    crown = "🥉";
+                    rankBadge = "3rd";
                   } else {
                     rowClasses = "border-slate-900 border-2 shadow-[2px_2px_0px_rgba(0,0,0,1)] opacity-90";
                   }
@@ -375,9 +395,13 @@ export default function TypingArea() {
                         <span className={`w-8 h-8 flex items-center justify-center rounded-full font-black text-sm border-2 ${rankClasses}`}>
                           #{idx + 1}
                         </span>
-                        <span className="font-black text-lg flex items-center gap-2 truncate max-w-[150px]">
+                        <span className="font-black text-lg flex items-center gap-2 truncate max-w-[170px]">
                           {entry.name}
-                          {crown && <span className="text-xl" title="Crown">{crown}</span>}
+                          {rankBadge && (
+                            <span className="rounded border border-slate-900/20 bg-white/70 px-1.5 py-0.5 text-[10px] font-black uppercase tracking-wide text-slate-700">
+                              {rankBadge}
+                            </span>
+                          )}
                         </span>
                       </div>
                       <div className="bg-[#baeef3] px-3 py-1 rounded-lg border-2 border-slate-900 font-black text-slate-900 flex items-center gap-1 shadow-sm">
@@ -390,7 +414,8 @@ export default function TypingArea() {
             </div>
           </div>
 
-        </motion.div>
+          </motion.div>
+        </div>
       )}
     </div>
   );
