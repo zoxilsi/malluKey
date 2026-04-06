@@ -2,7 +2,7 @@
 
 import { supabase } from '@/lib/supabase';
 import { revalidatePath } from 'next/cache';
-import Filter from 'bad-words';
+import { Filter } from 'bad-words';
 
 export interface LeaderboardEntry {
   id: string;
