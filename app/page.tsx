@@ -7,6 +7,7 @@ import GlobalLeaderboard from "@/components/ui/GlobalLeaderboard";
 export default function Home() {
   return (
     <main className="relative min-h-[100dvh] overflow-x-hidden bg-[#baeef3] selection:bg-[#B3F023]/50 text-slate-900 font-sans">
+      <h1 className="sr-only">MalluKey - The Best Malayalam Keyboard, Manglish Keyboard, and Desh Keyboard alternative by zoxilsi</h1>
       <div className="sm:hidden relative min-h-[100dvh] w-full px-4 py-8 flex flex-col items-center justify-center overflow-hidden">
         {/* Background static clouds for mobile */}
         <div className="absolute inset-0 pointer-events-none z-0">
@@ -27,7 +28,7 @@ export default function Home() {
           </div>
 
           <div>
-            <h1 className="text-xl font-black text-slate-900">Desktop Recommended</h1>
+            <h2 className="text-xl font-black text-slate-900">Desktop Recommended</h2>
             <p className="mt-2 text-sm font-semibold leading-relaxed text-slate-700">
               malluKey is optimized for bigger screens. Please open this website on a desktop or laptop for the best typing experience.
             </p>

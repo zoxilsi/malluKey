@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "MalluKey | Malayalam Typing Speed Test & Keyboard",
-  description: "Test and improve your Malayalam typing speed. ⚡ Fast, secure, and accurate Malayalam Keyboard (WPM tracking). Compete on the Top 10 global leaderboard today!",
+  title: "MalluKey | Best Malayalam, Manglish & Desh Keyboard Online by Zoxilsi",
+  description: "Test and improve your Malayalam typing speed. The ultimate online Malayalam keyboard, Manglish keyboard, and Desh keyboard alternative by Zoxilsi. Fast, secure, and accurate WPM tracking. Compete on the Top 10 global leaderboard today!",
   keywords: [
     "malayalam typing",
     "mallu keyboard",
@@ -25,24 +25,33 @@ export const metadata: Metadata = {
     "online malayalam keyboard",
     "malayalam typing practice",
     "WPM test malayalam",
-    "learn malayalam typing"
+    "learn malayalam typing",
+    "manglish keyboard",
+    "desh keyboard",
+    "malayalam keyboard",
+    "zoxilsi",
+    "zoxilsi malayalam",
+    "zoxilsi keyboard",
+    "best manglish keyboard online",
+    "malayalam english keyboard",
+    "type in malayalam"
   ],
-  authors: [{ name: "MalluKey" }],
-  creator: "MalluKey",
-  publisher: "MalluKey",
+  authors: [{ name: "Zoxilsi" }],
+  creator: "Zoxilsi",
+  publisher: "Zoxilsi",
   openGraph: {
-    title: "MalluKey | Malayalam Typing Speed Test",
+    title: "MalluKey | Malayalam, Manglish & Desh Keyboard by Zoxilsi",
     description: "The ultimate Malayalam typing competition & practice tool. Track your WPM, learn the exact custom keyboard layout, and rule the global Top 10 leaderboard.",
     url: "https://mallukey.vercel.app", // Replace with your actual domain when you get one!
-    siteName: "MalluKey",
+    siteName: "MalluKey by Zoxilsi",
     type: "website",
     locale: "ml_IN",
   },
   twitter: {
     card: "summary_large_image",
-    title: "MalluKey | Malayalam Typing Speed Test",
-    description: "Test your Malayalam typing speed and compete against the world! Can you hit the Top 10?",
-    creator: "@mallukey",
+    title: "MalluKey | Malayalam, Manglish & Desh Keyboard",
+    description: "Test your Malayalam typing speed and compete against the world! The best online Malayalam keyboard by Zoxilsi.",
+    creator: "@zoxilsi",
   },
   robots: {
     index: true,
